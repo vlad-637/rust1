@@ -20,13 +20,7 @@ async fn main() {
 
     let app = Router::new()
         .route("/keys", get(list_keys))
-        .route(
-            "/:key", 
-            get(kv_get),
-        )
-        .route(
-            "/:key", 
-            post(kv_set),
+        .route("/:key", get(kv_get).post(kv_set),
         )
         .layer(
             ServiceBuilder ::new()
@@ -34,7 +28,8 @@ async fn main() {
                 .load_shed()
                 .timeout(Duration::from_secs(10))
         )
-        .with_state(Arc::clone(&shared_state));
+        // .with_state(Arc::clone(&shared_state));
+        .with_state(shared_state);
 
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3001")
         .await
